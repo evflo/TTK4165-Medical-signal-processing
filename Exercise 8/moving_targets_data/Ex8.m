@@ -37,7 +37,8 @@ dynamicRange = 50;
 
 logarithimicPower = imagelog(power,gain,dynamicRange);
 
-figure,imagesc(time,1000*distance,logarithimicPower),colormap(gray),...
-    title('M-Mode of Iq'),xlabel('Time[sec]'),ylabel('Distance[mm]');
+figure,imagesc(time,10^4*distance,logarithimicPower),colormap(gray),...
+    title('M-Mode of IQ-beams'),xlabel('Time[sec]'),ylabel('Distance[cm]');
 
+[x,y] = ginput(3);
 
