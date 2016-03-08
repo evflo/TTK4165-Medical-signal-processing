@@ -67,9 +67,5 @@ plot(time,-pistonVelocity,'y'),hold off;
 
 %%
 
-pistonAccelerationAmplitude = pistonVelocityAmplitude*(2*pi/rotationPeriod);
-pistonAcceleration = pistonAccelerationAmplitude*cos(pistonVelocityAngularFrequency);
-
-pointVelocity = pistonVelocity+pistonAcceleration.*time;
-
+pistonAccelerationAmplitude = pistonVelocityAmplitude*
 
