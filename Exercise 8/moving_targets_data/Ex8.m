@@ -141,12 +141,31 @@ timeShiftCalculated = sampleShiftMax/samplingFrequencyRF;
 timeShiftAnalytically = 2*abs(pointPosition(frameWithThirdVelocity-1)- ...
     pointPosition(frameWithThirdVelocity))/speedSound;
 
-fprintf('After %d samples (e.g %g nsec) the cross-correlation has its maximum\n',sampleShiftMax,10^9*timeShiftAnalytically);
-
+fprintf('After %d samples (e.g %g nsec) the cross-correlation has its maximum\n',sampleShiftMax,10^9*timeShiftCalculated);
+fprintf('Analytical time shift: %g nsec\n',timeShiftAnalytically*10^9);
 phaseShiftCalculated = timeShiftCalculated*2*pi*demodulationFrequency;
 phaseShiftAnalytically = timeShiftAnalytically*2*pi*demodulationFrequency;
 
 fprintf('Calculated phase shift: %g radians \n',phaseShiftCalculated);
 fprintf('Analytical phase shift: %g radians \n',phaseShiftAnalytically);
 
+%% PART 5
 
+phaseShiftAutoCorr = angle(mean(conj(imageFrames(60:80,2)).*imageFrames(60:80,1)));
+
+fprintf('Calculated phase shift using autocorrelation method: %g radians \n',phaseShiftAutoCorr);
+
+firstMiddleBeamIq = middleBeamIq(:,1:nFrames-1);
+secondMiddleBeamIq = middleBeamIq(:,2:nFrames);
+
+totalPhaseShift = angle(mean(conj(secondMiddleBeamIq).*firstMiddleBeamIq));
+
+conversionValue = (speedSound*frameRate)/(4*pi*demodulationFrequency);
+
+calculatedVelocity = conversionValue*totalPhaseShift;
+
+figure(9),plot(time(1:630),calculatedVelocity,time,pointVelocity);
+title('Estimated velocity using auto correlation method');
+xlabel('Time [sec]');
+legend('Estimated using the auto correlation method',...
+    'Analytically calculated','Location','southeast');
