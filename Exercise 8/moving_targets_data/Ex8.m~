@@ -59,22 +59,17 @@ fprintf('t0= %g sec\n',t0);
 fprintf('R= %g cm\n',excenterDistance);
 %%
 pistonLength = 10;
-fixedPoint = 4;
-pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
+pistonAngularFrequency = (2*pi*time)/rotationPeriod;
 
 %pistonVelocity = pistonVelocityAmplitude*sin(pistonVelocityAngularFrequency);
 pistonPosition = pistonLength+excenterDistance*cos(pistonAngularFrequency);
-pointPosition = fixedPoint+excenterDistance*cos(pistonAngularFrequency);
 
-plot(time,pointPosition,'y'),hold off;
+plot(time,pistonPosition,'y'),hold off;
 
 %%
-pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
-pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
+%pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
+pistonVelocity
 
-pointVelocity = -pistonVelocity;
-
-figure,plot(time,pointVelocity),title('Point velocity'),xlabel('Time [sec]'),...
-    ylabel('Position [cm]');
+pointVelocity = pistonVelocity;
 
 
