@@ -10,7 +10,7 @@
 %   2016-03-08: First attempt
 %
 
-%%
+%% PART 2
 load slowmotion
 
 middleBeamIq = squeeze(iq(:,4,:));
@@ -40,7 +40,7 @@ logarithimicPower = imagelog(power,gain,dynamicRange);
 figure,imagesc(time,10^4*distance,logarithimicPower),colormap(gray),...
     title('M-Mode of IQ-beams'),xlabel('Time[sec]'),ylabel('Distance[cm]');
 hold on
-%%
+%% Subpart 1:Measure parameters
 [x,y] = ginput(3);
 
 rotationPeriod = x(2)-x(1); % T [s]
@@ -57,7 +57,7 @@ excenterDistance = (y(3)-mean([y(1),y(2)]))/2;
 fprintf('T= %g sec\n',rotationPeriod);
 fprintf('t0= %g sec\n',t0);
 fprintf('R= %g cm\n',excenterDistance);
-%%
+%% Subpart 2: Plot point position in M-mode image
 pistonLength = 10;
 fixedPoint = 4;
 pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
@@ -68,13 +68,85 @@ pointPosition = fixedPoint+excenterDistance*cos(pistonAngularFrequency);
 
 plot(time,pointPosition,'y'),hold off;
 
-%%
+%% PART 3
 pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
 pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
 
 pointVelocity = -pistonVelocity;
 
 figure,plot(time,pointVelocity),title('Point velocity'),xlabel('Time [sec]'),...
-    ylabel('Position [cm]');
+    ylabel('Velocity [cm/s]');
+
+%% Subpart 1: Choose frame and calulate parameters
+maxVelocity = max(pointVelocity);
+maxVariance = (1/30)*maxVelocity;
+
+framesBelowOneThirdVelocity = find(pointVelocity < (1/3)*maxVelocity+maxVariance);
+
+framesWithThirdVelocity = find(pointVelocity(framesBelowOneThirdVelocity) > (1/3)*maxVelocity ...
+        - maxVariance);
+    
+frameWithThirdVelocity = median(framesWithThirdVelocity);
+
+imageFrames = middleBeamIq(:,frameWithThirdVelocity-1:frameWithThirdVelocity);
+
+figure,plot(10^4*distance,imageFrames),title('Two subsequent beams(in time) with 1/3 of max velocity'),...
+xlabel('Positon[cm]');
+
+imageFramesVelocity = mean(pointVelocity(frameWithThirdVelocity-1:frameWithThirdVelocity));
+
+radialDisplacement = imageFramesVelocity/frameRate;% [cm]
+
+speedSound = 1540*100; %[cm/s]
+
+timeShiftAnalytically = 2*(radialDisplacement/speedSound);
+
+fprintf('Analytic velocity: %g cm/s\n',imageFramesVelocity);
+fprintf('Calculated radial displacement = %g cm \n',radialDisplacement);
+fprintf('Calculated time shift = %g nsec\n',10^(9)*timeShiftAnalytically);
+
+samplingFrequencyRF=200e6; %RF sampling freq.
+
+demodulationFrequency=s.iq.fDemodIQ_Hz; %IQ demodulation freq.
+samplingFrequencyIQ=s.iq.frsIQ_Hz; %IQ sampling freq
+
+firstRFBeam=iq2rf(imageFrames(:,1),demodulationFrequency,samplingFrequencyIQ,samplingFrequencyRF);
+secondRFBeam=iq2rf(imageFrames(:,2),demodulationFrequency,samplingFrequencyIQ,samplingFrequencyRF);
+
+timeRF=[1:length(firstRFBeam)]/samplingFrequencyRF;
+timeRF = 10^9*timeRF;
+figure,plot(timeRF,firstRFBeam,'b'),title('RF data of two subsequent beams(in time) with 1/3 of max velocity'); hold on;
+plot(timeRF,secondRFBeam,'r'); hold off;
+ylabel('RF signal');
+xlabel('Time[nsec]');
+
+%% PART 4
+%crossCorrelation = crosscorr(firstRFBeam,secondRFBeam);
+crossCorrelation = zeros(1,201);
+i = 1;
+for l = -100:100
+
+    for t = 15000:20000
+        crossCorrelation(i) = crossCorrelation(i)+...
+            firstRFBeam(t)*secondRFBeam(t+l);
+    end
+    i = i+1;
+end
+
+figure,plot(-100:100,crossCorrelation),title('Cross correlation');
+
+sampleShiftMax = find(crossCorrelation  == max(crossCorrelation));
+sampleShiftMax = (sampleShiftMax-101);
+timeShiftCalculated = sampleShiftMax/samplingFrequencyRF;
+timeShiftAnalytically = 2*abs(pointPosition(frameWithThirdVelocity-1)- ...
+    pointPosition(frameWithThirdVelocity))/speedSound;
+
+fprintf('After %d samples (e.g %g nsec) the cross-correlation has its maximum\n',sampleShiftMax,10^9*timeShiftAnalytically);
+
+phaseShiftCalculated = timeShiftCalculated*2*pi*demodulationFrequency;
+phaseShiftAnalytically = timeShiftAnalytically*2*pi*demodulationFrequency;
+
+fprintf('Calculated phase shift: %g radians \n',phaseShiftCalculated);
+fprintf('Analytical phase shift: %g radians \n',phaseShiftAnalytically);
 
 
