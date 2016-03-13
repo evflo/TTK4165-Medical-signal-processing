@@ -285,12 +285,10 @@ end % for i
 nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
 
 time = 0:nSeconds/(nFrames-1):nSeconds;
-
+time = time(1:630);
 
 figure,plot(time,calculatedVelocity,time,velocityInPhantom),...
     title('Piston velocity estimated and in phantom');
 
 legend('Estimated',...
     'Estimated with phase shift','Location','southeast');
-
-
