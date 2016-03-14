@@ -7,7 +7,7 @@
 %   Even Florenes NTNU 2016
 %
 % Last changes:
-%   2016-03-08: First attemptsp
+%   2016-03-08: First attempt
 %
 
 %% PART 2
@@ -121,7 +121,6 @@ ylabel('RF signal');
 xlabel('Time[nsec]');
 
 %% PART 4
-%crossCorrelation = crosscorr(firstRFBeam,secondRFBeam);
 crossCorrelation = zeros(1,201);
 i = 1;
 for l = -100:100
