@@ -1,12 +1,21 @@
-%
+%% Exercise 9 TTK4165 Medical Signal Processing
+% *Even Florenes Spring 2016*
+
+%% Documentation
 % Purpose: Script answering tasks given in exercise 9 in the course TTK4165
 % Medical Signal Processing
+%
+% Related files: 
+%   imagelog.m: Image a matrix of ultrasound power in log scale
 %
 % Made by:
 %   Even Florenes NTNU 2016
 %
 % Last changes:
-%   2016-03-25: First attempt
+%     2016-03-25 EF: First attempt on part 2,3 and 4
+%
+% Status:
+%   In production
 %
 %% Part 2 Pulsed Wave Doppler w/ analytic velocity
 
@@ -152,18 +161,25 @@ plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windo
 
 %% Part 4 - Doppler sound
 
+% Find middle sample
 iqSample = middleBeamIq(round(size(middleBeamIq,1)/2),:);
 
+% Extend sample, find real part, resample and rescale
 iqSampleExtended = [iqSample,iqSample,iqSample,iqSample];
 realSample = real(iqSampleExtended);
 realSampleResampled = resample(realSample,8192,round(frameRate));
 realSampleScaled = realSampleResampled/max(abs(realSampleResampled));
+
+% Play hearable doppler frequency
 soundsc(realSampleScaled,8192,8);
+
+% Plot changes in time domain
 timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
 figure(4);
 plot(timeExtended,realSample),xlabel('Time[sec]'),...
     title('Real part of extended sample');
 
+% Image FFT of real sample
 PHamming=zeros(Nfft, nFrames-crop+1);
 for n=1:nFrames-crop+1,
     middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';

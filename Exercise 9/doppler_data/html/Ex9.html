@@ -1,0 +1,433 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Exercise 9 TTK4165 Medical Signal Processing</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-25"><meta name="DC.source" content="Ex9.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Exercise 9 TTK4165 Medical Signal Processing</h1><!--introduction--><p><b>Even Florenes Spring 2016</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Documentation</a></li><li><a href="#2">Part 2 Pulsed Wave Doppler w/ analytic velocity</a></li><li><a href="#3">Part 3 - Doppler shift and aliasing</a></li><li><a href="#4">Part 4 - Doppler sound</a></li></ul></div><h2>Documentation<a name="1"></a></h2><p>Purpose: Script answering tasks given in exercise 9 in the course TTK4165 Medical Signal Processing</p><p>Related files:   imagelog.m: Image a matrix of ultrasound power in log scale</p><p>Made by:   Even Florenes NTNU 2016</p><p>Last changes:     2016-03-25 EF: First attempt on part 2,3 and 4</p><p>Status:   In production</p><h2>Part 2 Pulsed Wave Doppler w/ analytic velocity<a name="2"></a></h2><pre class="codeinput">load <span class="string">slowmotion</span>
+
+<span class="comment">% Find middle beam</span>
+middleBeamIq = squeeze(iq(:,4,:));
+
+frameRate = s.Framerate_fps; <span class="comment">% nFrames/seconds</span>
+
+nFrames = size(middleBeamIq,2); <span class="comment">%nFrames</span>
+
+nSamples = size(middleBeamIq,1);
+
+nSeconds = nFrames/frameRate;   <span class="comment">%seconds = (nFrames/(nFrames/seconds))</span>
+
+time = 0:nSeconds/(nFrames-1):nSeconds;
+
+distanceLength = s.iq.DepthIncrementIQ_m;
+
+distance = 0:distanceLength/(nSamples-1):distanceLength;
+
+<span class="comment">% Find analytic velocity</span>
+rotationPeriod=0.908;
+t0=0.0708;
+excenterDistance=0.67;
+
+pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
+pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
+
+pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
+pointVelocity = -pistonVelocity;
+
+
+
+<span class="comment">% Make Pulsed Wave Doppler Spectrum</span>
+Nfft=64; <span class="comment">%Zeropadding to length 64</span>
+crop=16;
+depthindex = round(size(middleBeamIq,1)/2);
+PHamming=zeros(Nfft, nFrames-crop+1);
+P=zeros(Nfft, nFrames-crop+1);
+<span class="keyword">for</span> n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    P(:,n) = mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+<span class="keyword">end</span>;
+<span class="comment">%Frequency axis</span>
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+<span class="comment">%Greyscale image of frequency specter in dB</span>
+gain = -25;
+dynamicRange = 40;
+
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+P = imagelog(P,gain,dynamicRange);
+figure(1);
+<span class="comment">% Plot image without windowing</span>
+subplot(1,2,1),image(timeAxis,frequencyAxis,P),colormap(gray(64));
+hold <span class="string">on</span>
+subplot(1,2,1),plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Pulsed Wave Doppler Spectrum'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
+    ylabel(<span class="string">'Velocity [cm/s]'</span>);
+<span class="comment">% Plot image with hamming windowing</span>
+subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+hold <span class="string">on</span>
+subplot(1,2,2),plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
+    ylabel(<span class="string">'Velocity [cm/s]'</span>);
+</pre><img vspace="5" hspace="5" src="Ex9_01.png" alt=""> <h2>Part 3 - Doppler shift and aliasing<a name="3"></a></h2><pre class="codeinput">load <span class="string">fastmotion.mat</span>
+
+<span class="comment">% Find middle beam iq</span>
+middleBeamIq = squeeze(iq(:,4,:));
+
+nFrames = size(middleBeamIq,2); <span class="comment">%nFrames</span>
+
+nSamples = size(middleBeamIq,1);
+
+nSeconds = nFrames/frameRate;   <span class="comment">%seconds = (nFrames/(nFrames/seconds))</span>
+
+time = 0:nSeconds/(nFrames-1):nSeconds;
+
+distanceLength = s.iq.DepthIncrementIQ_m;
+
+distance = 0:distanceLength/(nSamples-1):distanceLength;
+
+<span class="comment">% From suggested solution exercise 8</span>
+x=[0.0419;0.356;0.675];y=[2.75;4.12;2.78];
+excenterDistance=(y(2)-y(1))/2;
+rotationPeriod=x(3)-x(1);
+t0=x(1);<span class="comment">%R in cm, T and t0 in seconds</span>
+
+pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
+pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
+
+pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
+pointVelocity = -pistonVelocity;
+
+<span class="comment">% Make Pulsed Wave Doppler Spectrum</span>
+Nfft=64; <span class="comment">%Zeropadding to length 64</span>
+crop=16;
+depthindex = round(size(middleBeamIq,1)/2);
+PHamming=zeros(Nfft, nFrames-crop+1);
+P=zeros(Nfft, nFrames-crop+1);
+<span class="keyword">for</span> n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    P(:,n) = mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+<span class="keyword">end</span>;
+<span class="comment">%Frequency axis</span>
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+<span class="comment">%Greyscale image of frequency specter in dB</span>
+gain = -25;
+dynamicRange = 40;
+
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+P = imagelog(P,gain,dynamicRange);
+figure(2);
+<span class="comment">% Plot image without windowing</span>
+subplot(1,2,1),image(timeAxis,frequencyAxis,P),colormap(gray(64));
+hold <span class="string">on</span>
+subplot(1,2,1),plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Pulsed Wave Doppler Spectrum'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
+    ylabel(<span class="string">'Velocity [cm/s]'</span>);
+<span class="comment">% Plot image with hamming windowing</span>
+subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+hold <span class="string">on</span>
+subplot(1,2,2),plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
+    ylabel(<span class="string">'Velocity [cm/s]'</span>);
+
+
+PExtended = [PHamming;PHamming;PHamming];
+frequencyAxis=([0:Nfft-1]/Nfft)-0.5;
+frequencyAxis=[frequencyAxis-1, frequencyAxis, frequencyAxis+1]*frameRate;
+figure(3);
+image(timeAxis,frequencyAxis,PExtended),colormap(gray(64));
+hold <span class="string">on</span>
+plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Extended Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
+    ylabel(<span class="string">'Velocity[cm/s]'</span>);
+</pre><img vspace="5" hspace="5" src="Ex9_02.png" alt=""> <img vspace="5" hspace="5" src="Ex9_03.png" alt=""> <h2>Part 4 - Doppler sound<a name="4"></a></h2><pre class="codeinput"><span class="comment">% Find middle sample</span>
+iqSample = middleBeamIq(round(size(middleBeamIq,1)/2),:);
+
+<span class="comment">% Extend sample, find real part, resample and rescale</span>
+iqSampleExtended = [iqSample,iqSample,iqSample,iqSample];
+realSample = real(iqSampleExtended);
+realSampleResampled = resample(realSample,8192,round(frameRate));
+realSampleScaled = realSampleResampled/max(abs(realSampleResampled));
+
+<span class="comment">% Play hearable doppler frequency</span>
+soundsc(realSampleScaled,8192,8);
+
+<span class="comment">% Plot changes in time domain</span>
+timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
+figure(4);
+plot(timeExtended,realSample),xlabel(<span class="string">'Time[sec]'</span>),<span class="keyword">...</span>
+    title(<span class="string">'Real part of extended sample'</span>);
+
+<span class="comment">% Image FFT of real sample</span>
+PHamming=zeros(Nfft, nFrames-crop+1);
+<span class="keyword">for</span> n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(real(middleBeamIqFrames),Nfft))),2);
+<span class="keyword">end</span>
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+figure(5),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+title(<span class="string">'Extended Real Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
+    ylabel(<span class="string">'Velocity[cm/s]'</span>);
+</pre><img vspace="5" hspace="5" src="Ex9_04.png" alt=""> <img vspace="5" hspace="5" src="Ex9_05.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Exercise 9 TTK4165 Medical Signal Processing
+% *Even Florenes Spring 2016*
+
+%% Documentation
+% Purpose: Script answering tasks given in exercise 9 in the course TTK4165
+% Medical Signal Processing
+%
+% Related files: 
+%   imagelog.m: Image a matrix of ultrasound power in log scale
+%
+% Made by:
+%   Even Florenes NTNU 2016
+%
+% Last changes:
+%     2016-03-25 EF: First attempt on part 2,3 and 4
+%
+% Status:
+%   In production
+%
+%% Part 2 Pulsed Wave Doppler w/ analytic velocity
+
+load slowmotion
+
+% Find middle beam
+middleBeamIq = squeeze(iq(:,4,:));
+
+frameRate = s.Framerate_fps; % nFrames/seconds
+
+nFrames = size(middleBeamIq,2); %nFrames
+
+nSamples = size(middleBeamIq,1); 
+
+nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
+
+time = 0:nSeconds/(nFrames-1):nSeconds;
+
+distanceLength = s.iq.DepthIncrementIQ_m;
+
+distance = 0:distanceLength/(nSamples-1):distanceLength;
+
+% Find analytic velocity
+rotationPeriod=0.908;
+t0=0.0708;
+excenterDistance=0.67;
+
+pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
+pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
+
+pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
+pointVelocity = -pistonVelocity;
+
+
+
+% Make Pulsed Wave Doppler Spectrum
+Nfft=64; %Zeropadding to length 64
+crop=16;
+depthindex = round(size(middleBeamIq,1)/2);
+PHamming=zeros(Nfft, nFrames-crop+1);
+P=zeros(Nfft, nFrames-crop+1);
+for n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    P(:,n) = mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+end;
+%Frequency axis
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+%Greyscale image of frequency specter in dB
+gain = -25;
+dynamicRange = 40;
+
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+P = imagelog(P,gain,dynamicRange);
+figure(1);
+% Plot image without windowing
+subplot(1,2,1),image(timeAxis,frequencyAxis,P),colormap(gray(64));
+hold on
+subplot(1,2,1),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum'),xlabel('Time [sec]'),...
+    ylabel('Velocity [cm/s]');
+% Plot image with hamming windowing
+subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+hold on
+subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity [cm/s]');
+
+%% Part 3 - Doppler shift and aliasing
+load fastmotion.mat
+
+% Find middle beam iq
+middleBeamIq = squeeze(iq(:,4,:));
+
+nFrames = size(middleBeamIq,2); %nFrames
+
+nSamples = size(middleBeamIq,1); 
+
+nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
+
+time = 0:nSeconds/(nFrames-1):nSeconds;
+
+distanceLength = s.iq.DepthIncrementIQ_m;
+
+distance = 0:distanceLength/(nSamples-1):distanceLength;
+
+% From suggested solution exercise 8
+x=[0.0419;0.356;0.675];y=[2.75;4.12;2.78];
+excenterDistance=(y(2)-y(1))/2;
+rotationPeriod=x(3)-x(1);
+t0=x(1);%R in cm, T and t0 in seconds
+
+pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
+pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
+
+pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
+pointVelocity = -pistonVelocity;
+
+% Make Pulsed Wave Doppler Spectrum
+Nfft=64; %Zeropadding to length 64
+crop=16;
+depthindex = round(size(middleBeamIq,1)/2);
+PHamming=zeros(Nfft, nFrames-crop+1);
+P=zeros(Nfft, nFrames-crop+1);
+for n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    P(:,n) = mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+end;
+%Frequency axis
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+%Greyscale image of frequency specter in dB
+gain = -25;
+dynamicRange = 40;
+
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+P = imagelog(P,gain,dynamicRange);
+figure(2);
+% Plot image without windowing
+subplot(1,2,1),image(timeAxis,frequencyAxis,P),colormap(gray(64));
+hold on
+subplot(1,2,1),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum'),xlabel('Time [sec]'),...
+    ylabel('Velocity [cm/s]');
+% Plot image with hamming windowing
+subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+hold on
+subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity [cm/s]');
+
+
+PExtended = [PHamming;PHamming;PHamming];
+frequencyAxis=([0:Nfft-1]/Nfft)-0.5;
+frequencyAxis=[frequencyAxis-1, frequencyAxis, frequencyAxis+1]*frameRate;
+figure(3);
+image(timeAxis,frequencyAxis,PExtended),colormap(gray(64));
+hold on
+plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity[cm/s]');
+
+%% Part 4 - Doppler sound
+
+% Find middle sample
+iqSample = middleBeamIq(round(size(middleBeamIq,1)/2),:);
+
+% Extend sample, find real part, resample and rescale
+iqSampleExtended = [iqSample,iqSample,iqSample,iqSample];
+realSample = real(iqSampleExtended);
+realSampleResampled = resample(realSample,8192,round(frameRate));
+realSampleScaled = realSampleResampled/max(abs(realSampleResampled));
+
+% Play hearable doppler frequency
+soundsc(realSampleScaled,8192,8);
+
+% Plot changes in time domain
+timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
+figure(4);
+plot(timeExtended,realSample),xlabel('Time[sec]'),...
+    title('Real part of extended sample');
+
+% Image FFT of real sample
+PHamming=zeros(Nfft, nFrames-crop+1);
+for n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(real(middleBeamIqFrames),Nfft))),2);
+end
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+figure(5),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+title('Extended Real Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity[cm/s]');
+
+##### SOURCE END #####
+--></body></html>
