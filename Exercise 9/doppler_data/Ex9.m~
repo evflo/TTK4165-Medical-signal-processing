@@ -150,4 +150,7 @@ hold on
 plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[cm/s]');
 
-%% Part 4 - Doppler Sound
+%% Part 4 - Doppler sound
+
+iqSample = middleBeamIq(round(end/2),:);
+

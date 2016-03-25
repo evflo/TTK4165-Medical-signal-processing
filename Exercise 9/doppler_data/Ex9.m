@@ -151,3 +151,27 @@ plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windo
     ylabel('Velocity[cm/s]');
 
 %% Part 4 - Doppler sound
+
+iqSample = middleBeamIq(round(size(middleBeamIq,1)/2),:);
+
+iqSampleExtended = [iqSample,iqSample,iqSample,iqSample];
+realSample = real(iqSampleExtended);
+realSampleResampled = resample(realSample,8192,round(frameRate));
+realSampleScaled = realSampleResampled/max(abs(realSampleResampled));
+soundsc(realSampleScaled,8192,8);
+timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
+figure(4);
+plot(timeExtended,realSample),xlabel('Time[sec]'),...
+    title('Real part of extended sample');
+
+PHamming=zeros(Nfft, nFrames-crop+1);
+for n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(real(middleBeamIqFrames),Nfft))),2);
+end
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+figure(5),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+title('Extended Real Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity[cm/s]');
