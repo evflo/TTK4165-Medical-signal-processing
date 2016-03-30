@@ -191,3 +191,119 @@ PHamming=imagelog(PHamming,gain,dynamicRange);
 figure(5),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
 title('Extended Real Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[cm/s]');
+
+%% Part 5 - Clutter and clutter filter
+
+
+load slowmotion_clutter
+
+% Find middle beam
+middleBeamIq = squeeze(iq(:,4,:));
+
+frameRate = s.Framerate_fps; % nFrames/seconds
+
+nFrames = size(middleBeamIq,2); %nFrames
+
+nSamples = size(middleBeamIq,1); 
+
+nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
+
+time = 0:nSeconds/(nFrames-1):nSeconds;
+
+distanceLength = s.iq.DepthIncrementIQ_m;
+
+distance = 0:distanceLength/(nSamples-1):distanceLength;
+
+% Find analytic velocity
+rotationPeriod=0.908;
+t0=0.0708;
+excenterDistance=0.67;
+
+pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
+pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
+
+pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
+pointVelocity = -pistonVelocity;
+
+
+
+% Make Pulsed Wave Doppler Spectrum
+Nfft=64; %Zeropadding to length 64
+crop=16;
+depthindex = round(size(middleBeamIq,1)/2);
+PHamming=zeros(Nfft, nFrames-crop+1);
+for n=1:nFrames-crop+1,
+    middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+end;
+%Frequency axis
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+%Greyscale image of frequency specter in dB
+gain = -25;
+dynamicRange = 40;
+
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+figure(6);
+% Plot image without windowing
+subplot(1,2,1),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+hold on
+subplot(1,2,1),plot(time,pointVelocity,'w'),title('Doppler Spectrum with artifact[Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity [cm/s]');
+
+% Low pass filter
+nFilterCoefficients = 8;
+filterCoefficents=ones(1,nFilterCoefficients); %=boxcar(N). May also use hamming(N), hanning(N), ....
+filterCoefficents=filterCoefficents/sum(filterCoefficents); %Normalization of filter coefficients
+iqLowPassFiltered=filter(filterCoefficents,1,middleBeamIq,[],2); %Filter along rows
+iqHighPassFiltered=middleBeamIq-iqLowPassFiltered; %Subtract low pass component:
+
+% Make Pulsed Wave Doppler Spectrum
+Nfft=64; %Zeropadding to length 64
+crop=16;
+depthindex = round(size(middleBeamIq,1)/2);
+PHamming=zeros(Nfft, nFrames-crop+1);
+for n=1:nFrames-crop+1,
+    middleBeamIqFrames=iqHighPassFiltered(depthindex,n+[0:crop-1])';
+    middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+    PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+end;
+%Frequency axis
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+%Greyscale image of frequency specter in dB
+gain = -25;
+dynamicRange = 40;
+
+timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+PHamming=imagelog(PHamming,gain,dynamicRange);
+% Plot image without windowing
+figure(6);
+subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
+hold on
+subplot(1,2,2),plot(time,pointVelocity,'w'),title('Doppler Spectrum with artifact highpassfiltered[Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Velocity [cm/s]');
+
+% Make sound of filtered and unfiltered
+
+% Find middle sample
+iqSample = middleBeamIq(round(size(middleBeamIq,1)/2),:);
+iqSampleFiltered = iqHighPassFiltered(round(size(iqHighPassFiltered,1)/2),:);
+% Extend sample, find real part, resample and rescale
+iqSampleExtended = [iqSample,iqSample,iqSample,iqSample];
+iqSampleExtendedFiltered = [iqSampleFiltered,iqSampleFiltered,iqSampleFiltered ,...
+    iqSampleFiltered];
+iqSamples = [iqSampleExtended;iqSampleExtendedFiltered];
+for i = 1:size(iqSamples,1)
+    realSample = real(iqSamples(i,:));
+    realSampleResampled = resample(realSample,8192,round(frameRate));
+    realSampleScaled = realSampleResampled/max(abs(realSampleResampled));
+
+    % Play hearable doppler frequency
+    soundsc(realSampleScaled,8192,8);
+    pause(10);
+end % for i
+
+%% Part 6 - Blood flow measurement using Doppler
