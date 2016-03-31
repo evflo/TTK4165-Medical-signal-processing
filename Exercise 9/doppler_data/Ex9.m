@@ -152,9 +152,9 @@ subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum 
 
 PExtended = [PHamming;PHamming;PHamming];
 frequencyAxis=([0:Nfft-1]/Nfft)-0.5;
-frequencyAxis=[frequencyAxis-1, frequencyAxis, frequencyAxis+1]*frameRate;
+frequencyAxisStacked=[frequencyAxis,-2*min(frequencyAxis)+frequencyAxis+1,-4*min(frequencyAxis)+frequencyAxis+1];
 figure(3);
-image(timeAxis,frequencyAxis,PExtended),colormap(gray(64));
+image(timeAxis,frequencyAxisStacked,PExtended),colormap(gray(64));
 hold on
 plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[cm/s]');
@@ -307,3 +307,57 @@ for i = 1:size(iqSamples,1)
 end % for i
 
 %% Part 6 - Blood flow measurement using Doppler
+
+load Dopplerdata
+
+% Find middle beam
+middleBeamIq = iq;
+
+frameRate = s.Framerate_fps; % nFrames/seconds
+
+nFrames = size(middleBeamIq,2); %nFrames
+
+nSamples = size(middleBeamIq,1); 
+
+nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
+
+time = 0:nSeconds/(nFrames-1):nSeconds;
+
+distanceLength = s.iq.DepthIncrementIQ_m;
+
+distance = 0:distanceLength/(nSamples-1):distanceLength;
+
+
+% Make Pulsed Wave Doppler Spectrum
+Nfft=256; %Zeropadding to length 64
+crops=[8,16,32,64];
+for i = 1:length(crops)
+    crop = crops(i);
+    depthindex = [70:80];
+    PHamming=zeros(Nfft, nFrames-crop+1);
+    for n=1:nFrames-crop+1,
+        middleBeamIqFrames=middleBeamIq(depthindex,n+[0:crop-1])';
+        middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
+        PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
+    end;
+    %Frequency axis
+    frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+
+    %Greyscale image of frequency specter in dB
+    gain = -20;
+    dynamicRange = 20;
+
+    timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+    PHamming=imagelog(PHamming,gain,dynamicRange);
+    figure(7);
+    plotTitle = ['Doppler spectrum of Doppler data, segment length:' num2str(crop)];
+    % Plot image without windowing
+    subplot(length(crops),1,i),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64)),...
+        title(plotTitle),xlabel('Time [sec]'),...
+        ylabel('Velocity [cm/s]');
+end
+PHammingStacked = [PHamming;PHamming;PHamming];
+frequencyAxisStacked=[frequencyAxis,-2*min(frequencyAxis)+frequencyAxis+1,-4*min(frequencyAxis)+frequencyAxis+1];
+figure(8),image(timeAxis,frequencyAxisStacked,PHammingStacked),colormap(gray(64)),...
+    title('Stacked Doppler spectrum of Doppler data, segment length: 64'),xlabel('Time[sec]'),...
+    ylabel('Velocity [cm/s]');
