@@ -66,7 +66,11 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Exercise 9 TTK4165 Medical Signal Processing</h1><!--introduction--><p><b>Even Florenes Spring 2016</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Documentation</a></li><li><a href="#2">Part 2 Pulsed Wave Doppler w/ analytic velocity</a></li><li><a href="#3">Part 3 - Doppler shift and aliasing</a></li><li><a href="#4">Part 4 - Doppler sound</a></li><li><a href="#5">Part 5 - Clutter and clutter filter</a></li><li><a href="#6">Part 6 - Blood flow measurement using Doppler</a></li></ul></div><h2>Documentation<a name="1"></a></h2><p>Purpose: Script answering tasks given in exercise 9 in the course TTK4165 Medical Signal Processing</p><p>Related files:   imagelog.m: Image a matrix of ultrasound power in log scale</p><p>Made by:   Even Florenes NTNU 2016</p><p>Last changes:     2016-03-25 EF: First attempt on part 2,3 and 4     2016-03-30 EF: First attempt on part 5,6     2016-03-31 EF: Finished all parts, commented, updated documentation                    and published</p><p>Status:   Works</p><h2>Part 2 Pulsed Wave Doppler w/ analytic velocity<a name="2"></a></h2><pre class="codeinput">load <span class="string">slowmotion</span>
+  </style></head><body><div class="content"><h1>Exercise 9 TTK4165 Medical Signal Processing</h1><!--introduction--><p><b>Even Florenes Spring 2016</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Documentation</a></li><li><a href="#2">Part 2 Pulsed Wave Doppler w/ analytic velocity</a></li><li><a href="#3">Part 3 - Doppler shift and aliasing</a></li><li><a href="#4">Part 4 - Doppler sound</a></li><li><a href="#5">Part 5 - Clutter and clutter filter</a></li><li><a href="#6">Part 6 - Blood flow measurement using Doppler</a></li></ul></div><h2>Documentation<a name="1"></a></h2><p>Purpose:</p><p>Script answering tasks given in exercise 9 in the course TTK4165 Medical Signal Processing</p><p>Related files:</p><pre class="language-matlab">imagelog.m: Image a <span class="string">matrix</span> <span class="string">of</span> <span class="string">ultrasound</span> <span class="string">power</span> <span class="string">in</span> <span class="string">log</span> <span class="string">scale</span>
+</pre><p>Made by:</p><pre class="language-matlab">Even <span class="string">Florenes</span> <span class="string">NTNU</span> <span class="string">2016</span>
+</pre><p>Last changes:</p><pre>   2016-03-25 EF: First attempt on part 2,3 and 4</pre><pre>   2016-03-30 EF: First attempt on part 5,6</pre><pre>   2016-03-31 EF: Finished all parts, commented, updated documentation
+                  and published</pre><p>Status:</p><pre class="language-matlab">Works
+</pre><h2>Part 2 Pulsed Wave Doppler w/ analytic velocity<a name="2"></a></h2><pre class="codeinput">load <span class="string">slowmotion</span>
 
 <span class="comment">% Find middle beam</span>
 middleBeamIq = squeeze(iq(:,4,:));
@@ -475,22 +479,30 @@ PRF needed to avoid aliasing: 5201 Hz
 % *Even Florenes Spring 2016*
 
 %% Documentation
-% Purpose: Script answering tasks given in exercise 9 in the course TTK4165
+% Purpose: 
+%
+% Script answering tasks given in exercise 9 in the course TTK4165
 % Medical Signal Processing
 %
 % Related files: 
+%
 %   imagelog.m: Image a matrix of ultrasound power in log scale
 %
 % Made by:
+%
 %   Even Florenes NTNU 2016
 %
 % Last changes:
+%
 %     2016-03-25 EF: First attempt on part 2,3 and 4
+%
 %     2016-03-30 EF: First attempt on part 5,6
+%
 %     2016-03-31 EF: Finished all parts, commented, updated documentation
 %                    and published
 %                    
 % Status:
+%
 %   Works
 %
 %% Part 2 Pulsed Wave Doppler w/ analytic velocity

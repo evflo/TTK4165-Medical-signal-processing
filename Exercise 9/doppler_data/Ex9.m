@@ -2,22 +2,30 @@
 % *Even Florenes Spring 2016*
 
 %% Documentation
-% Purpose: Script answering tasks given in exercise 9 in the course TTK4165
+% Purpose: 
+%
+% Script answering tasks given in exercise 9 in the course TTK4165
 % Medical Signal Processing
 %
 % Related files: 
+%
 %   imagelog.m: Image a matrix of ultrasound power in log scale
 %
 % Made by:
+%
 %   Even Florenes NTNU 2016
 %
 % Last changes:
+%
 %     2016-03-25 EF: First attempt on part 2,3 and 4
+%
 %     2016-03-30 EF: First attempt on part 5,6
+%
 %     2016-03-31 EF: Finished all parts, commented, updated documentation
 %                    and published
 %                    
 % Status:
+%
 %   Works
 %
 %% Part 2 Pulsed Wave Doppler w/ analytic velocity
