@@ -52,7 +52,7 @@ distance = 0:distanceLength/(nSamples-1):distanceLength;
 % Find analytic velocity
 rotationPeriod=0.908;
 t0=0.0708;
-excenterDistance=0.67;
+excenterDistance=0.67/100;
 
 pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
 pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
@@ -60,7 +60,10 @@ pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
 pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
 pointVelocity = -pistonVelocity;
 
+centerFrequency = s.fProbe_Hz;
+speedSound = 1540;
 
+dopplerShift = -centerFrequency*(2*pointVelocity)/speedSound;
 
 % Make Pulsed Wave Doppler Spectrum
 Nfft=64; %Zeropadding to length 64
@@ -76,33 +79,33 @@ for n=1:nFrames-crop+1,
     PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
 end;
 %Frequency axis
-frequencyAxis=distanceLength*(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
 
 %Greyscale image of frequency specter in dB
 gain = -25;
 dynamicRange = 40;
 
-timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+timeAxis = 0:nSeconds/(size(PHamming,2)-1):nSeconds;
 PHamming=imagelog(PHamming,gain,dynamicRange);
 P = imagelog(P,gain,dynamicRange);
 figure(1);
 % Plot image without windowing
 subplot(1,2,1),image(timeAxis,frequencyAxis,P),colormap(gray(64));
 hold on
-subplot(1,2,1),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum'),xlabel('Time [sec]'),...
-    ylabel('Velocity [m/s]');
+subplot(1,2,1),plot(time,dopplerShift,'y'),title('Frequency Spectrum'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 % Plot image with hamming windowing
 subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
 hold on
-subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity [m/s]');
-
+subplot(1,2,2),plot(time,dopplerShift,'y'),title('Frequency Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
+hold off
 %
 % Comments on image:
 % Looking at the image you can see that the doppler frequency is
 % higher then the maximum allowed by Nyquist criterion. Which leads to
 % aliasing. The aliasing is shown in the image by the amplitude of the
-% velocity exceeding the window, and the remaining of the amplitude is
+% doppler frequency exceeding the window, and the remaining of the amplitude is
 % flipped to the opposite side of the window.
 % 
 % Using hamming window leads to less noisy image.
@@ -130,7 +133,7 @@ distance = 0:distanceLength/(nSamples-1):distanceLength;
 
 % From suggested solution exercise 8
 x=[0.0419;0.356;0.675];y=[2.75;4.12;2.78];
-excenterDistance=(y(2)-y(1))/2;
+excenterDistance=((y(2)-y(1))/2)/100;
 rotationPeriod=x(3)-x(1);
 t0=x(1);%R in cm, T and t0 in seconds
 
@@ -139,6 +142,12 @@ pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
 
 pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
 pointVelocity = -pistonVelocity;
+
+
+centerFrequency = s.fProbe_Hz;
+speedSound = 1540;
+
+dopplerShift = -centerFrequency*(2*pointVelocity)/speedSound;
 
 % Make Pulsed Wave Doppler Spectrum
 Nfft=64; %Zeropadding to length 64
@@ -154,37 +163,37 @@ for n=1:nFrames-crop+1,
     PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
 end;
 %Frequency axis
-frequencyAxis=distanceLength*(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
 
 %Greyscale image of frequency specter in dB
 gain = -25;
 dynamicRange = 40;
 
-timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+timeAxis = 0:nSeconds/(size(PHamming,2)-1):nSeconds;
 PHamming=imagelog(PHamming,gain,dynamicRange);
 P = imagelog(P,gain,dynamicRange);
 figure(2);
 % Plot image without windowing
 subplot(1,2,1),image(timeAxis,frequencyAxis,P),colormap(gray(64));
 hold on
-subplot(1,2,1),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum'),xlabel('Time [sec]'),...
-    ylabel('Velocity [m/s]');
+subplot(1,2,1),plot(time,dopplerShift,'y'),title('Frequency Spectrum'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 % Plot image with hamming windowing
 subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
 hold on
-subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity [m/s]');
+subplot(1,2,2),plot(time,dopplerShift,'y'),title('Frequency Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 
 PhammingExtendable = PHamming;
 PhammingExtendable(end,:) = 64;
 PExtended = [PhammingExtendable;PhammingExtendable;PhammingExtendable];
-frequencyAxis=distanceLength*([0:Nfft-1]/Nfft)-0.5;
+
 frequencyAxisStacked=[frequencyAxis,-2*min(frequencyAxis)+frequencyAxis+1,-4*min(frequencyAxis)+frequencyAxis+1];
 figure(3);
 image(timeAxis,frequencyAxisStacked,PExtended),colormap(gray(64));
 hold on
-plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity[m/s]');
+plot(time,dopplerShift,'y'),title('Extended Frequency Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 
 % Comments on image:
 % The Nyquist limit in the extended image is shown as a white line in the
@@ -218,14 +227,14 @@ for n=1:nFrames-crop+1,
     middleBeamIqFrames=middleBeamIqFrames.*(hamming(crop)*ones(1,length(depthindex)));
     PHammingReal(:,n)=mean(abs(fftshift(fft(real(middleBeamIqFrames),Nfft))),2);
 end
-timeAxis = 0:(1/frameRate)/(size(PHammingReal,2)-1):(1/frameRate);
+timeAxis = 0:nSeconds/(size(PHamming,2)-1):nSeconds;
 PHammingReal=imagelog(PHammingReal,gain,dynamicRange);
 figure(5),subplot(1,2,1),image(timeAxis,frequencyAxis,PHammingReal),colormap(gray(64));
-title('Real Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity[cm/s]');
+title('Real Frequency Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64)),...
-title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity[m/s]');
+title('Frequency Spectrum [Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency[Hz]');
 
 % Comments on time plot:
 % The time plot show that the extended sample looks many sinc-functions
@@ -235,8 +244,8 @@ title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
 %
 % Comments on image: 
 %
-% FFT of the real part of the signal produces an image where the velocity
-% varies simultaneous as a negative and positive velocity. The two
+% FFT of the real part of the signal produces an image where the doppler
+% shift varies simultaneous as a negative and positive frequency. The two
 % variations are perfectly matched.
 %
 %
@@ -263,19 +272,6 @@ distanceLength = s.iq.DepthIncrementIQ_m;
 
 distance = 0:distanceLength/(nSamples-1):distanceLength;
 
-% Find analytic velocity
-rotationPeriod=0.908;
-t0=0.0708;
-excenterDistance=0.67;
-
-pistonAngularFrequency = (2*pi*(time-t0))/rotationPeriod;
-pistonVelocityAmplitude = -(2*pi*excenterDistance)/rotationPeriod;
-
-pistonVelocity = pistonVelocityAmplitude*sin(pistonAngularFrequency);
-pointVelocity = -pistonVelocity;
-
-
-
 % Make Pulsed Wave Doppler Spectrum
 Nfft=64; %Zeropadding to length 64
 crop=16;
@@ -288,20 +284,19 @@ for n=1:nFrames-crop+1,
     PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
 end;
 %Frequency axis
-frequencyAxis=distanceLength*(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
 
 %Greyscale image of frequency specter in dB
 gain = -25;
 dynamicRange = 40;
 
-timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+timeAxis = 0:nSeconds/(size(PHamming,2)-1):nSeconds;
 PHamming=imagelog(PHamming,gain,dynamicRange);
 figure(6);
 % Plot image without windowing
 subplot(1,2,1),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
-hold on
-subplot(1,2,1),plot(time,pointVelocity,'w'),title('Doppler Spectrum with artifact[Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity [cm/s]');
+title('Frequency Spectrum with artifact[Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 
 % Low pass filter
 nFilterCoefficients = 8;
@@ -322,20 +317,19 @@ for n=1:nFrames-crop+1,
     PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
 end;
 %Frequency axis
-frequencyAxis=distanceLength*(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*frameRate;
 
 %Greyscale image of frequency specter in dB
 gain = -25;
 dynamicRange = 40;
 
-timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+timeAxis = 0:nSeconds/(size(PHamming,2)-1):nSeconds;
 PHamming=imagelog(PHamming,gain,dynamicRange);
 % Plot image without windowing
 figure(6);
 subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64));
-hold on
-subplot(1,2,2),plot(time,pointVelocity,'w'),title('Doppler Spectrum with artifact highpassfiltered[Windowed]'),xlabel('Time [sec]'),...
-    ylabel('Velocity [m/s]');
+title('Frequency Spectrum with artifact highpassfiltered[Windowed]'),xlabel('Time [sec]'),...
+    ylabel('Frequency [Hz]');
 
 % Make sound of filtered and unfiltered
 
@@ -373,10 +367,6 @@ end % for i
 %% Part 6 - Blood flow measurement using Doppler
 
 load Dopplerdata
-
-% Find middle beam
-middleBeamIq = iq;
-
 frameRate = s.Framerate_fps; % nFrames/seconds
 
 nFrames = size(middleBeamIq,2); %nFrames
@@ -385,12 +375,9 @@ nSamples = size(middleBeamIq,1);
 
 nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
 
-time = 0:nSeconds/(nFrames-1):nSeconds;
 
-distanceLength = s.iq.DepthIncrementIQ_m;
-
-distance = 0:distanceLength/(nSamples-1):distanceLength;
-
+% Find middle beam
+middleBeamIq = iq;
 
 % Make Pulsed Wave Doppler Spectrum
 Nfft=256; %Zeropadding to length 64
@@ -405,20 +392,20 @@ for i = 1:length(crops)
         PHamming(:,n)=mean(abs(fftshift(fft(middleBeamIqFrames,Nfft))),2);
     end;
     %Frequency axis
-    frequencyAxis=distanceLength*(([0:Nfft-1]/Nfft)-0.5)*frameRate;
+    frequencyAxis=(([0:Nfft-1]/Nfft)-0.5)*prf;
 
     %Greyscale image of frequency specter in dB
     gain = -20;
     dynamicRange = 20;
 
-    timeAxis = 0:(1/frameRate)/(size(PHamming,2)-1):(1/frameRate);
+    timeAxis = 0:nSeconds/(size(PHamming,2)-1):1/prf;
     PHamming=imagelog(PHamming,gain,dynamicRange);
     figure(7);
-    plotTitle = ['Doppler spectrum of Doppler data, segment length:' num2str(crop)];
+    plotTitle = ['Frequency spectrum of Doppler data, segment length:' num2str(crop)];
     % Plot image without windowing
     subplot(length(crops),1,i),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64)),...
         title(plotTitle),xlabel('Time [sec]'),...
-        ylabel('Velocity [m/s]');
+        ylabel('Frequency [Hz]');
 end
 PHammingStakable = PHamming;
 PHammingStakable(1,:) = 64;
@@ -427,17 +414,23 @@ PHammingStacked = [PHammingStakable;PHammingStakable;PHammingStakable];
 frequencyAxisStacked=[frequencyAxis,-2*min(frequencyAxis)+frequencyAxis+1,-4*min(frequencyAxis)+frequencyAxis+1];
 figure(8),image(timeAxis,frequencyAxisStacked,PHammingStacked),colormap(gray(64)),...
     title('Stacked Doppler spectrum of Doppler data, segment length: 64'),xlabel('Time[sec]'),...
-    ylabel('Velocity [m/s]');
-
+    ylabel('Frequency [Hz]');
+hold on
+[x,y] = ginput(2);
 
 centerFrequency = f0;
-speedSound = 1540*100; %cm/s
+speedSound = 1540; %cm/s
 pulseRepetition = prf;
 nyquistSpeed = (speedSound*pulseRepetition)/(4*centerFrequency);
+dopplerShift = centerFrequency*(2*nyquistSpeed)/speedSound;
 % Measured Nyquist limit:
-% Nyquist limit: 33.5 cm/s
-maxVelocity = 80.1;
+
+maxDopplerShift = y(2)-y(1);
+%maxDopplerShift = 300;
+maxVelocity = (speedSound*maxDopplerShift)/(2*centerFrequency);
 pulseRepetitionForMaxVelocity = (4*centerFrequency*maxVelocity)/speedSound;
-fprintf('Nyquist speed with given PRF: %g cm/s\n',nyquistSpeed);
-fprintf('Measured maximum velocity: %g cm/s\n',maxVelocity);
+fprintf('Nyquist speed with given PRF: %g m/s\n',nyquistSpeed);
+fprintf('Nyquist doppler shift: %g Hz\n',dopplerShift);
+fprintf('Measured maximum doppler shift: %g Hz \n',maxDopplerShift);
+fprintf('Maximum velocity: %g m/s\n',maxVelocity);
 fprintf('PRF needed to avoid aliasing: %.0f Hz\n',pulseRepetitionForMaxVelocity);
