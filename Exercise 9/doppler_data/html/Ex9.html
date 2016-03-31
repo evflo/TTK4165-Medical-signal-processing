@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Exercise 9 TTK4165 Medical Signal Processing</h1><!--introduction--><p><b>Even Florenes Spring 2016</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Documentation</a></li><li><a href="#2">Part 2 Pulsed Wave Doppler w/ analytic velocity</a></li><li><a href="#3">Part 3 - Doppler shift and aliasing</a></li><li><a href="#4">Part 4 - Doppler sound</a></li><li><a href="#5">Part 5 - Clutter and clutter filter</a></li><li><a href="#6">Part 6 - Blood flow measurement using Doppler</a></li></ul></div><h2>Documentation<a name="1"></a></h2><p>Purpose: Script answering tasks given in exercise 9 in the course TTK4165 Medical Signal Processing</p><p>Related files:   imagelog.m: Image a matrix of ultrasound power in log scale</p><p>Made by:   Even Florenes NTNU 2016</p><p>Last changes:     2016-03-25 EF: First attempt on part 2,3 and 4     2016-03-30 EF: First attempt on part 5,6</p><p>Status:   In production</p><h2>Part 2 Pulsed Wave Doppler w/ analytic velocity<a name="2"></a></h2><pre class="codeinput">load <span class="string">slowmotion</span>
+  </style></head><body><div class="content"><h1>Exercise 9 TTK4165 Medical Signal Processing</h1><!--introduction--><p><b>Even Florenes Spring 2016</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Documentation</a></li><li><a href="#2">Part 2 Pulsed Wave Doppler w/ analytic velocity</a></li><li><a href="#3">Part 3 - Doppler shift and aliasing</a></li><li><a href="#4">Part 4 - Doppler sound</a></li><li><a href="#5">Part 5 - Clutter and clutter filter</a></li><li><a href="#6">Part 6 - Blood flow measurement using Doppler</a></li></ul></div><h2>Documentation<a name="1"></a></h2><p>Purpose: Script answering tasks given in exercise 9 in the course TTK4165 Medical Signal Processing</p><p>Related files:   imagelog.m: Image a matrix of ultrasound power in log scale</p><p>Made by:   Even Florenes NTNU 2016</p><p>Last changes:     2016-03-25 EF: First attempt on part 2,3 and 4     2016-03-30 EF: First attempt on part 5,6     2016-03-31 EF: Finished all parts, commented, updated documentation                    and published</p><p>Status:   Works</p><h2>Part 2 Pulsed Wave Doppler w/ analytic velocity<a name="2"></a></h2><pre class="codeinput">load <span class="string">slowmotion</span>
 
 <span class="comment">% Find middle beam</span>
 middleBeamIq = squeeze(iq(:,4,:));
@@ -133,7 +133,8 @@ hold <span class="string">on</span>
 subplot(1,2,2),plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
     ylabel(<span class="string">'Velocity [m/s]'</span>);
 
-<span class="comment">% Comments:</span>
+<span class="comment">%</span>
+<span class="comment">% Comments on image:</span>
 <span class="comment">% Looking at the image you can see that the doppler frequency is</span>
 <span class="comment">% higher then the maximum allowed by Nyquist criterion. Which leads to</span>
 <span class="comment">% aliasing. The aliasing is shown in the image by the amplitude of the</span>
@@ -141,10 +142,6 @@ subplot(1,2,2),plot(time,pointVelocity,<span class="string">'w'</span>),title(<s
 <span class="comment">% flipped to the opposite side of the window.</span>
 <span class="comment">%</span>
 <span class="comment">% Using hamming window leads to less noisy image.</span>
-<span class="comment">%</span>
-<span class="comment">%</span>
-<span class="comment">%</span>
-<span class="comment">%</span>
 <span class="comment">%</span>
 </pre><img vspace="5" hspace="5" src="Ex9_01.png" alt=""> <h2>Part 3 - Doppler shift and aliasing<a name="3"></a></h2><pre class="codeinput">load <span class="string">fastmotion.mat</span>
 
@@ -223,12 +220,9 @@ hold <span class="string">on</span>
 plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Extended Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
     ylabel(<span class="string">'Velocity[m/s]'</span>);
 
-<span class="comment">% Comments:</span>
+<span class="comment">% Comments on image:</span>
 <span class="comment">% The Nyquist limit in the extended image is shown as a white line in the</span>
 <span class="comment">% image.</span>
-<span class="comment">%</span>
-<span class="comment">%</span>
-<span class="comment">%</span>
 <span class="comment">%</span>
 </pre><img vspace="5" hspace="5" src="Ex9_02.png" alt=""> <img vspace="5" hspace="5" src="Ex9_03.png" alt=""> <h2>Part 4 - Doppler sound<a name="4"></a></h2><pre class="codeinput"><span class="comment">% Find middle sample</span>
 iqSample = middleBeamIq(round(size(middleBeamIq,1)/2),:);
@@ -247,11 +241,6 @@ timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
 figure(4);
 plot(timeExtended,realSample),xlabel(<span class="string">'Time[sec]'</span>),<span class="keyword">...</span>
     title(<span class="string">'Real part of extended sample'</span>);
-<span class="comment">% Comments:</span>
-<span class="comment">% The time plot show that the extended sample looks many sinc-functions</span>
-<span class="comment">% with varying amplitude and frequency.</span>
-<span class="comment">%</span>
-<span class="comment">%</span>
 
 <span class="comment">% Image FFT of real sample</span>
 PHammingReal=zeros(Nfft, nFrames-crop+1);
@@ -269,7 +258,13 @@ subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64)),<span c
 title(<span class="string">'Pulsed Wave Doppler Spectrum [Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
     ylabel(<span class="string">'Velocity[m/s]'</span>);
 
-<span class="comment">% Comments:</span>
+<span class="comment">% Comments on time plot:</span>
+<span class="comment">% The time plot show that the extended sample looks many sinc-functions</span>
+<span class="comment">% with varying amplitude and frequency.</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">% Comments on image:</span>
 <span class="comment">%</span>
 <span class="comment">% FFT of the real part of the signal produces an image where the velocity</span>
 <span class="comment">% varies simultaneous as a negative and positive velocity. The two</span>
@@ -335,13 +330,6 @@ hold <span class="string">on</span>
 subplot(1,2,1),plot(time,pointVelocity,<span class="string">'w'</span>),title(<span class="string">'Doppler Spectrum with artifact[Windowed]'</span>),xlabel(<span class="string">'Time [sec]'</span>),<span class="keyword">...</span>
     ylabel(<span class="string">'Velocity [cm/s]'</span>);
 
-<span class="comment">% Comments:</span>
-<span class="comment">% The slowmotion_clutter.mat gives a more noisy image. The image shows that</span>
-<span class="comment">% there are lot of small movements in the imaged area, which leads to the</span>
-<span class="comment">% quality of the large movement in the image is reduced, compared with</span>
-<span class="comment">% slowmotion.mat.</span>
-
-
 <span class="comment">% Low pass filter</span>
 nFilterCoefficients = 8;
 filterCoefficents=ones(1,nFilterCoefficients); <span class="comment">%=boxcar(N). May also use hamming(N), hanning(N), ....</span>
@@ -396,7 +384,13 @@ iqSamples = [iqSampleExtended;iqSampleExtendedFiltered];
     pause(10);
 <span class="keyword">end</span> <span class="comment">% for i</span>
 
-<span class="comment">% Comments:</span>
+<span class="comment">% Comments on clutter image:</span>
+<span class="comment">% The slowmotion_clutter.mat gives a more noisy image. The image shows that</span>
+<span class="comment">% there are lot of small movements in the imaged area, which leads to the</span>
+<span class="comment">% quality of the large movement in the image is reduced, compared with</span>
+<span class="comment">% slowmotion.mat.</span>
+
+<span class="comment">% Comments on sound test:</span>
 <span class="comment">% In the unfiltered sample the clutter movements leads to the sound of the</span>
 <span class="comment">% blood flow being contaminated.</span>
 <span class="comment">%</span>
@@ -493,9 +487,11 @@ PRF needed to avoid aliasing: 5201 Hz
 % Last changes:
 %     2016-03-25 EF: First attempt on part 2,3 and 4
 %     2016-03-30 EF: First attempt on part 5,6
-%
+%     2016-03-31 EF: Finished all parts, commented, updated documentation
+%                    and published
+%                    
 % Status:
-%   In production
+%   Works
 %
 %% Part 2 Pulsed Wave Doppler w/ analytic velocity
 
@@ -566,7 +562,8 @@ hold on
 subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity [m/s]');
 
-% Comments:
+%
+% Comments on image:
 % Looking at the image you can see that the doppler frequency is
 % higher then the maximum allowed by Nyquist criterion. Which leads to
 % aliasing. The aliasing is shown in the image by the amplitude of the
@@ -575,10 +572,7 @@ subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum 
 % 
 % Using hamming window leads to less noisy image.
 %
-%
-%
-%
-%
+
 %% Part 3 - Doppler shift and aliasing
 load fastmotion.mat
 
@@ -657,13 +651,11 @@ hold on
 plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[m/s]');
 
-% Comments:
+% Comments on image:
 % The Nyquist limit in the extended image is shown as a white line in the
 % image.
 %
-%
-%
-%
+
 %% Part 4 - Doppler sound
 
 % Find middle sample
@@ -683,11 +675,6 @@ timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
 figure(4);
 plot(timeExtended,realSample),xlabel('Time[sec]'),...
     title('Real part of extended sample');
-% Comments:
-% The time plot show that the extended sample looks many sinc-functions
-% with varying amplitude and frequency.
-%
-%
 
 % Image FFT of real sample
 PHammingReal=zeros(Nfft, nFrames-crop+1);
@@ -705,7 +692,13 @@ subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64)),...
 title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[m/s]');
 
-% Comments: 
+% Comments on time plot:
+% The time plot show that the extended sample looks many sinc-functions
+% with varying amplitude and frequency.
+%
+%
+%
+% Comments on image: 
 %
 % FFT of the real part of the signal produces an image where the velocity
 % varies simultaneous as a negative and positive velocity. The two
@@ -775,13 +768,6 @@ hold on
 subplot(1,2,1),plot(time,pointVelocity,'w'),title('Doppler Spectrum with artifact[Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity [cm/s]');
 
-% Comments:
-% The slowmotion_clutter.mat gives a more noisy image. The image shows that
-% there are lot of small movements in the imaged area, which leads to the  
-% quality of the large movement in the image is reduced, compared with
-% slowmotion.mat.
-
-
 % Low pass filter
 nFilterCoefficients = 8;
 filterCoefficents=ones(1,nFilterCoefficients); %=boxcar(N). May also use hamming(N), hanning(N), ....
@@ -836,7 +822,13 @@ for i = 1:size(iqSamples,1)
     pause(10);
 end % for i
 
-% Comments:
+% Comments on clutter image:
+% The slowmotion_clutter.mat gives a more noisy image. The image shows that
+% there are lot of small movements in the imaged area, which leads to the  
+% quality of the large movement in the image is reduced, compared with
+% slowmotion.mat.
+
+% Comments on sound test:
 % In the unfiltered sample the clutter movements leads to the sound of the
 % blood flow being contaminated.
 %

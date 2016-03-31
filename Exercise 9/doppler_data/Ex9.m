@@ -14,9 +14,11 @@
 % Last changes:
 %     2016-03-25 EF: First attempt on part 2,3 and 4
 %     2016-03-30 EF: First attempt on part 5,6
-%
+%     2016-03-31 EF: Finished all parts, commented, updated documentation
+%                    and published
+%                    
 % Status:
-%   In production
+%   Works
 %
 %% Part 2 Pulsed Wave Doppler w/ analytic velocity
 
@@ -87,7 +89,8 @@ hold on
 subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity [m/s]');
 
-% Comments:
+%
+% Comments on image:
 % Looking at the image you can see that the doppler frequency is
 % higher then the maximum allowed by Nyquist criterion. Which leads to
 % aliasing. The aliasing is shown in the image by the amplitude of the
@@ -96,10 +99,7 @@ subplot(1,2,2),plot(time,pointVelocity,'w'),title('Pulsed Wave Doppler Spectrum 
 % 
 % Using hamming window leads to less noisy image.
 %
-%
-%
-%
-%
+
 %% Part 3 - Doppler shift and aliasing
 load fastmotion.mat
 
@@ -178,13 +178,11 @@ hold on
 plot(time,pointVelocity,'w'),title('Extended Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[m/s]');
 
-% Comments:
+% Comments on image:
 % The Nyquist limit in the extended image is shown as a white line in the
 % image.
 %
-%
-%
-%
+
 %% Part 4 - Doppler sound
 
 % Find middle sample
@@ -204,11 +202,6 @@ timeExtended = 0:time(end)*4/(size(realSample,2)-1):time(end)*4;
 figure(4);
 plot(timeExtended,realSample),xlabel('Time[sec]'),...
     title('Real part of extended sample');
-% Comments:
-% The time plot show that the extended sample looks many sinc-functions
-% with varying amplitude and frequency.
-%
-%
 
 % Image FFT of real sample
 PHammingReal=zeros(Nfft, nFrames-crop+1);
@@ -226,7 +219,13 @@ subplot(1,2,2),image(timeAxis,frequencyAxis,PHamming),colormap(gray(64)),...
 title('Pulsed Wave Doppler Spectrum [Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity[m/s]');
 
-% Comments: 
+% Comments on time plot:
+% The time plot show that the extended sample looks many sinc-functions
+% with varying amplitude and frequency.
+%
+%
+%
+% Comments on image: 
 %
 % FFT of the real part of the signal produces an image where the velocity
 % varies simultaneous as a negative and positive velocity. The two
@@ -296,13 +295,6 @@ hold on
 subplot(1,2,1),plot(time,pointVelocity,'w'),title('Doppler Spectrum with artifact[Windowed]'),xlabel('Time [sec]'),...
     ylabel('Velocity [cm/s]');
 
-% Comments:
-% The slowmotion_clutter.mat gives a more noisy image. The image shows that
-% there are lot of small movements in the imaged area, which leads to the  
-% quality of the large movement in the image is reduced, compared with
-% slowmotion.mat.
-
-
 % Low pass filter
 nFilterCoefficients = 8;
 filterCoefficents=ones(1,nFilterCoefficients); %=boxcar(N). May also use hamming(N), hanning(N), ....
@@ -357,7 +349,13 @@ for i = 1:size(iqSamples,1)
     pause(10);
 end % for i
 
-% Comments:
+% Comments on clutter image:
+% The slowmotion_clutter.mat gives a more noisy image. The image shows that
+% there are lot of small movements in the imaged area, which leads to the  
+% quality of the large movement in the image is reduced, compared with
+% slowmotion.mat.
+
+% Comments on sound test:
 % In the unfiltered sample the clutter movements leads to the sound of the
 % blood flow being contaminated.
 %
