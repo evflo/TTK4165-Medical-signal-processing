@@ -368,7 +368,8 @@ end % for i
 
 load Dopplerdata
 frameRate = s.Framerate_fps; % nFrames/seconds
-
+% Find middle beam
+middleBeamIq = iq;
 nFrames = size(middleBeamIq,2); %nFrames
 
 nSamples = size(middleBeamIq,1); 
@@ -376,8 +377,7 @@ nSamples = size(middleBeamIq,1);
 nSeconds = nFrames/frameRate;   %seconds = (nFrames/(nFrames/seconds))
 
 
-% Find middle beam
-middleBeamIq = iq;
+
 
 % Make Pulsed Wave Doppler Spectrum
 Nfft=256; %Zeropadding to length 64
@@ -398,7 +398,7 @@ for i = 1:length(crops)
     gain = -20;
     dynamicRange = 20;
 
-    timeAxis = 0:nSeconds/(size(PHamming,2)-1):1/prf;
+    timeAxis = 0:nSeconds/(size(PHamming,2)-1):1/nSeconds;
     PHamming=imagelog(PHamming,gain,dynamicRange);
     figure(7);
     plotTitle = ['Frequency spectrum of Doppler data, segment length:' num2str(crop)];
@@ -416,7 +416,7 @@ figure(8),image(timeAxis,frequencyAxisStacked,PHammingStacked),colormap(gray(64)
     title('Stacked Doppler spectrum of Doppler data, segment length: 64'),xlabel('Time[sec]'),...
     ylabel('Frequency [Hz]');
 hold on
-[x,y] = ginput(2);
+%[x,y] = ginput(2);
 
 centerFrequency = f0;
 speedSound = 1540; %cm/s
@@ -425,8 +425,8 @@ nyquistSpeed = (speedSound*pulseRepetition)/(4*centerFrequency);
 dopplerShift = centerFrequency*(2*nyquistSpeed)/speedSound;
 % Measured Nyquist limit:
 
-maxDopplerShift = y(2)-y(1);
-%maxDopplerShift = 300;
+%Measured using ginput:maxDopplerShift = y(2)-y(1);
+maxDopplerShift = 2864.81;
 maxVelocity = (speedSound*maxDopplerShift)/(2*centerFrequency);
 pulseRepetitionForMaxVelocity = (4*centerFrequency*maxVelocity)/speedSound;
 fprintf('Nyquist speed with given PRF: %g m/s\n',nyquistSpeed);
