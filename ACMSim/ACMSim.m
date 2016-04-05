@@ -1,6 +1,6 @@
 
 %% Autocorrelation method simulation
-%  Authors: Lasse Løvstakken, Hans Torp
+%  Authors: Lasse L?vstakken, Hans Torp
 %  Last update: 
 %  Calls: sim1dSignal.m (simulate signals), acormodFreq.m (generate model)
 
@@ -21,8 +21,8 @@
     vClutter = 1/100;
     angClutter = 90*pi/180;
     % Signal-to-noise [dB]
-    SNRBlood = 25;
-    SNRClutter = 40;
+    SNRBlood = 0;
+    SNRClutter = 30;
     % Ultrasound imaging setup
     centerFreq = 5e6;       % Center frequency
     pulsePeriods = 4.5;     % Number of periods in pulse
