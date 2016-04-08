@@ -198,7 +198,11 @@ subplot(2,1,2),plot(squeeze(c(:,r,b)),'k-o');
 title('Middle of artery residual');
 %What does the residual signal look like?
 % The residual is centered around Im = 28, Re = -45 which shows that there
-% is strong clutter component from the movement of the vessel wall.
+% is strong clutter component from 
+%
+%
+%
+
 %% Exercise 5: Velocity estimation using the autocorrelation method
 
 frameno = 5; 
