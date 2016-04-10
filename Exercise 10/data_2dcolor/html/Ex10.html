@@ -1,0 +1,680 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Exercise 10 TTK4165 Medical Signal Processing</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-04-08"><meta name="DC.source" content="Ex10.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Exercise 10 TTK4165 Medical Signal Processing</h1><!--introduction--><p><b>Even Florenes Spring 2016</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Documentation</a></li><li><a href="#2">Exercise 1: Visualization</a></li><li><a href="#3">Exercise 2: Blood tissue ratio</a></li><li><a href="#4">Exercise 3: Regression filter for removing clutter</a></li><li><a href="#5">Exercise 4: Complex plots</a></li><li><a href="#6">Exercise 5: Velocity estimation using the autocorrelation method</a></li><li><a href="#7">Color encoding</a></li><li><a href="#8">Graded color encoding</a></li></ul></div><h2>Documentation<a name="1"></a></h2><p>Ex10.m</p><p>Purpose: Script answering tasks given in exercise 10 in TTK4165</p><p>Made by:</p><pre class="language-matlab">Even <span class="string">Florenes</span> <span class="string">NTNU</span> <span class="string">2016</span>
+</pre><p>Related files:</p><pre class="language-matlab">imagelog.m: Image a <span class="string">matrix</span> <span class="string">of</span> <span class="string">ultrasound</span> <span class="string">power</span> <span class="string">in</span> <span class="string">log</span> <span class="string">scale</span>
+</pre><pre class="language-matlab">clutterfilterrespons.m
+</pre><pre class="language-matlab">regressionfilter.m: Removes clutter <span class="string">from</span> <span class="string">iq</span> <span class="string">signal</span>
+</pre><p>Last changes:</p><pre class="language-matlab">2016-04-06 EF: First attempt
+</pre><pre class="language-matlab">2016-04-08 EF: Implemented remaining <span class="string">exercises</span>
+</pre><p>Status:</p><pre class="language-matlab">Works
+</pre><h2>Exercise 1: Visualization<a name="2"></a></h2><pre class="codeinput">load <span class="string">carotid.mat</span>
+
+iq2d = squeeze(iq(6,:,:,1));
+
+gain = -33;
+dyn = 40;
+imagelog(abs(iq2d).^2,gain,dyn);
+</pre><img vspace="5" hspace="5" src="Ex10_01.png" alt=""> <h2>Exercise 2: Blood tissue ratio<a name="3"></a></h2><pre class="codeinput"><span class="comment">% Set data-points for vessel wall &amp; artery.</span>
+r_tissue=48; b_tissue=30;
+r_artery=111;b_artery=40;
+<span class="comment">% Averaging R samples radially and B samples laterally</span>
+R=6; B=3;
+<span class="comment">% Extract data</span>
+iq_tissue =iq(:,r_tissue+[0:R],b_tissue+[0:B],1);
+iq_artery = iq(:,r_artery+[0:R],b_artery+[0:B],1);
+<span class="comment">% Calculate intensity.</span>
+I_tissue = abs(iq_tissue).^2;
+I_artery = abs(iq_artery).^2;
+<span class="comment">% Average in all three dimensions.</span>
+I_tissue = mean(I_tissue(:));
+I_artery = mean(I_artery(:));
+
+intensityRatio = 10*log(I_artery/I_tissue);
+
+fprintf(<span class="string">'Intensity ratio between artery and tissue: %0.2f dB\n'</span>,intensityRatio);
+<span class="comment">% How much larger is the intensity in the vessel wall compared to the</span>
+<span class="comment">% vessel?</span>
+<span class="comment">%</span>
+<span class="comment">% The intensity, power transferred per unit area, is much larger in the</span>
+<span class="comment">% vessel wall.</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+</pre><pre class="codeoutput">Intensity ratio between artery and tissue: -74.25 dB
+</pre><h2>Exercise 3: Regression filter for removing clutter<a name="4"></a></h2><pre class="codeinput"><span class="comment">% Filter data with current order N.</span>
+<span class="comment">%y=regressionfilter(squeeze(iq(:,:,:,frameno),N));</span>
+frameNo=1;
+packetNo=6;
+gain = -20;
+<span class="keyword">for</span> N=-1:4
+<span class="comment">% Create subplot.</span>
+figure(2),subplot(2,3,N+2);
+<span class="comment">% Filter data with current order N.</span>
+y=regressionfilter(iq(:,:,:,frameNo),N);
+<span class="comment">% Squeeze to remove all other packet-data.</span>
+y=squeeze(y(packetNo,:,:));
+<span class="comment">% Show image.</span>
+imagelog(abs(y).^2,gain,dyn);
+<span class="comment">% Set title.</span>
+title([<span class="string">'N='</span>,num2str(N)]);
+<span class="keyword">end</span>
+<span class="comment">% Comment on the remaining blood and tissue signal for increasing filter</span>
+<span class="comment">% order:</span>
+<span class="comment">%</span>
+<span class="comment">% As we increase N the image becomes darker and darker. For higher N the</span>
+<span class="comment">% only remaining part in the image is the fluctuation in the artery and</span>
+<span class="comment">% vein. All of the surrounding vessel wall is removed.</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+packetSize=13;
+<span class="comment">% Set data-points for vessel wall &amp; artery.</span>
+r_tissue=48; b_tissue=30;
+r_artery=111;b_artery=40;
+<span class="comment">% Averaging R samples radially and B samples laterally</span>
+R=6; B=3;
+<span class="comment">% Extract data</span>
+N = -1:packetSize-2;
+iq_tissue =iq(:,r_tissue+[0:R],b_tissue+[0:B],1);
+iq_artery = iq(:,r_artery+[0:R],b_artery+[0:B],1);
+I_ratio = zeros(1,length(N));
+I_tissueMean = zeros(1,length(N));
+I_arteryMean = zeros(1,length(N));
+<span class="keyword">for</span> i = 1:length(N)
+    y_tissue = regressionfilter(iq_tissue,N(i));
+    y_artery = regressionfilter(iq_artery,N(i));
+    I_tissue = abs(y_tissue).^2;
+    I_artery = abs(y_artery).^2;
+    <span class="comment">% Average in all three dimensions.</span>
+    I_tissueMean(i) = mean(I_tissue(:));
+    I_arteryMean(i) = mean(I_artery(:));
+    I_ratio(i) = 10*log(I_arteryMean(i)/I_tissueMean(i));
+<span class="keyword">end</span>
+figure(3),plot(N,10*log(I_tissueMean)),title(<span class="string">'Intensity of vessel wall'</span>);
+xlabel(<span class="string">'N'</span>);ylabel(<span class="string">'dB'</span>);
+intensityClutterComponent = abs(10*log(I_arteryMean(2))-10*log(I_arteryMean(1)));
+fprintf(<span class="string">'The intensity of the clutter component compared to the \n'</span>)
+fprintf(<span class="string">'echo strength from the red blood cells is: %0.2f dB\n'</span>,intensityClutterComponent);
+
+figure(4),plot(N,I_ratio),title(<span class="string">'Intensity ratio of artery on tissue'</span>);
+xlabel(<span class="string">'N'</span>);ylabel(<span class="string">'dB'</span>);
+<span class="comment">% At what filter order is B/V the largest</span>
+<span class="comment">% B/V is largest at highest filter orden,N,11. After N exceeds 2 B/V</span>
+<span class="comment">% flattens out, but still increases a little until packSize-2 = 11.</span>
+<span class="comment">%</span>
+figure(5);hold <span class="string">on</span>;
+colors = [<span class="string">'mbgry'</span>];
+<span class="keyword">for</span> N=0:4
+    [y,c,Fm]=regressionfilter(iq(:,:,:,frameNo),N);
+    [f,H]=clutterfilterrespons(Fm);
+    color = colors(N+1);
+    plot(f,10*log10(H),[color <span class="string">'-'</span>]);
+<span class="keyword">end</span>;
+title(<span class="string">'Clutter filter response[N=0,1,2,3,4 color=mbgry]'</span>); xlabel(<span class="string">'Normalized Doppler frequency'</span>); ylabel(<span class="string">'dB'</span>);
+ylim([-20 3]); xlim([-0.5 0.5]);
+hold <span class="string">off</span>
+<span class="comment">% Comment.</span>
+<span class="comment">% As we increase the filter orden,N, of the regressionfilter, the filtering</span>
+<span class="comment">% of the clutter removes more and more of the lower frequencies in the image.</span>
+<span class="comment">% Using this high pass filter removes stationary parts (low frequency) of</span>
+<span class="comment">% the image, and leaves moving parts in the image (high frequency). The</span>
+<span class="comment">% moving parts in the image is the blood flow in the artery and vein,</span>
+<span class="comment">% and depending on the filter orden some movement in the vessel wall</span>
+<span class="comment">% is also let trough.</span>
+<span class="comment">%</span>
+</pre><pre class="codeoutput">The intensity of the clutter component compared to the 
+echo strength from the red blood cells is: 11.83 dB
+</pre><img vspace="5" hspace="5" src="Ex10_02.png" alt=""> <img vspace="5" hspace="5" src="Ex10_03.png" alt=""> <img vspace="5" hspace="5" src="Ex10_04.png" alt=""> <img vspace="5" hspace="5" src="Ex10_05.png" alt=""> <h2>Exercise 4: Complex plots<a name="5"></a></h2><pre class="codeinput">frameNo = 1;
+r = 48;
+b = 30;
+iq1 = iq(:,:,:,frameNo);
+<span class="comment">% Plot the complex data. Circle the datapoints.</span>
+figure(6);
+
+subplot(3,2,1);
+plot(squeeze(iq1(:,r,b)),<span class="string">'k-o'</span>);
+<span class="comment">% Make the axes scale equally in each direction.</span>
+axis(<span class="string">'equal'</span>);
+<span class="comment">% Label the axes.</span>
+xlabel(<span class="string">'Re'</span>);ylabel(<span class="string">'Im'</span>);
+<span class="comment">% Save the current axes for later.</span>
+axlimits=axis;
+<span class="comment">% Turn grid on.</span>
+grid <span class="string">on</span>;
+<span class="comment">% Use the relation between phase shift and movement</span>
+<span class="comment">% to explain how the signal looks.</span>
+<span class="comment">% In the cessel wall there is small low frequent movements around a fixed</span>
+<span class="comment">% phase. Subplot (1,1) in figure 6 shows that the phase shift of the area</span>
+<span class="comment">% is relatively fixed at real axis, but some movements leads to a small</span>
+<span class="comment">% phase shift in the wall</span>
+<span class="keyword">for</span> N=0:4,
+    subplot(3,2,N+2);
+    <span class="comment">% Filter...</span>
+    [y,c]=regressionfilter(iq1,N);
+    plot(squeeze(c(:,r,b)),<span class="string">'kx'</span>); <span class="comment">% Set axis.</span>
+    axis(axlimits)
+    grid <span class="string">on</span>;
+    <span class="comment">% Set title.</span>
+    title([<span class="string">'N='</span>,num2str(N)]);
+<span class="keyword">end</span>;
+<span class="comment">%How does the clutter component look?</span>
+<span class="comment">% The clutter component looks more and more like the complex plot of the iq</span>
+<span class="comment">% data as we increase the filter orden N. This shows that the</span>
+<span class="comment">% regressionfilter is able to remove the phase shift due to clutter</span>
+<span class="comment">% movements.</span>
+r = 111;
+b= 40;
+figure(7)
+subplot(2,1,1),plot(squeeze(y(:,r,b)),<span class="string">'k-o'</span>);
+title(<span class="string">'Middle of artery after filtration'</span>);
+axis(<span class="string">'equal'</span>); <span class="comment">% Make the axes scale equally in each direction.</span>
+xlabel(<span class="string">'Re'</span>);
+ylabel(<span class="string">'Im'</span>); <span class="comment">% Label the axes.</span>
+
+<span class="comment">%Is the adaption between signal and clutter polynomial as good in blood as in tissue?</span>
+<span class="comment">% After filtration the the blood signal complex plot is centered around 0.</span>
+<span class="comment">% This shows we have managed to remove most of the clutter component, have</span>
+<span class="comment">% a complex plot of the movement due to blood flow.</span>
+<span class="comment">%</span>
+subplot(2,1,2),plot(squeeze(c(:,r,b)),<span class="string">'k-o'</span>);
+title(<span class="string">'Middle of artery residual'</span>);
+<span class="comment">%What does the residual signal look like?</span>
+<span class="comment">% The residual is centered around Im = 28, Re = -45 which shows that there</span>
+<span class="comment">% is strong clutter component from the movement of the vessel wall.</span>
+</pre><img vspace="5" hspace="5" src="Ex10_06.png" alt=""> <img vspace="5" hspace="5" src="Ex10_07.png" alt=""> <h2>Exercise 5: Velocity estimation using the autocorrelation method<a name="6"></a></h2><pre class="codeinput">frameno = 5;
+iq1=squeeze(iq(:,:,:,frameno));
+N=3;
+y=regressionfilter(iq1,N);
+<span class="comment">% Get packetsize in data.</span>
+packetsize=size(iq,1);
+
+<span class="comment">% Make two matrices with lag ? = 1 of the clutter-filtered data.</span>
+y1 = y(1:packetsize-1,:,:);
+y2 = y(2:packetsize,:,:);
+
+R1=conj(y1).*y2;
+R1=squeeze(mean(R1));
+R=10; B=3;
+b=ones(R,B)/(R*B);
+R1=filter2(b,R1);
+<span class="comment">%Find the phase angle.</span>
+phaseangle= angle(R1);
+
+figure(8);colormap(<span class="string">'default'</span>);
+subplot(1,2,1),imagesc(phaseangle);
+<span class="comment">% Show colorbar.</span>
+colorbar; title(<span class="string">'Phaseangle before filtration'</span>);
+
+P=squeeze(mean(abs(y).^2));
+<span class="comment">% Spatial averaging.</span>
+P=filter2(b,P);
+<span class="comment">% Normalization.</span>
+P=P/max(P(:));
+dyn = -14;
+beta=10.^(dyn/10);<span class="comment">% 16 dB dynamic range</span>
+index=find(P&lt;beta); <span class="comment">% Get indexes.</span>
+phaseangle(index)=0;
+
+figure(8);colormap(<span class="string">'default'</span>);
+subplot(1,2,2),imagesc(phaseangle);
+<span class="comment">% Show colorbar.</span>
+colorbar; title(<span class="string">'Phaseangle after filtration'</span>);
+
+<span class="comment">% What sign does the phase shift in the artery have?</span>
+<span class="comment">% The artery have phase shift with positive sign ranging in general between</span>
+<span class="comment">% 1.5-3 given by the colorbar.</span>
+
+<span class="comment">% What is the relation between sign and flow direction?</span>
+<span class="comment">% Red, orange, yellow (warm colors) is used for positive values and show</span>
+<span class="comment">% flow direction towards the ultrasound transducer, and blue (cold colors)</span>
+<span class="comment">% is used for negative sign which indicates flow away from the transducer.</span>
+
+
+<span class="comment">% What sign does the phase shift in the vein have? Comment.</span>
+<span class="comment">% The vein have phase shift with negative sign, which shown with blue</span>
+<span class="comment">% color. The artery transports blood from the heart towards the brain in</span>
+<span class="comment">% the imaged area, which is here towards the transducer.</span>
+<span class="comment">% The vein transports the blood back from the brain towards which in the</span>
+<span class="comment">% imaged area is away from the transducer.</span>
+</pre><img vspace="5" hspace="5" src="Ex10_08.png" alt=""> <h2>Color encoding<a name="7"></a></h2><p>Simple code to make a combined color and grayscale tissue image Make a cf_colormap with 66 colors: A cf_colormap has three columns, one for red (R), one for green (G), and one for blue (B)</p><pre class="codeinput">cf_colormap=zeros(66,3);
+<span class="comment">% The first 64 colors are for grayscale</span>
+cf_colormap(1:64,:) = gray(64);
+<span class="comment">% The last to colors are red and blue</span>
+redindex=65;
+blueindex=66;
+cf_colormap(redindex,:)=[1 0 0]; <span class="comment">%R=1, G=0, B=0</span>
+cf_colormap(blueindex,:)=[0 0 1]; <span class="comment">%R=0, G=0, B=1</span>
+<span class="comment">% Tissueimage: Grayscale with 64 levels, from IMAGELOG</span>
+<span class="comment">% Phaseangle: Matrix with estimated phaseangle for all points in the % image.</span>
+alfa = pi/4;
+positiveindex=find(phaseangle&gt;alfa);
+negativeindex=find(phaseangle&lt;-alfa);
+
+iq2d = squeeze(iq(6,:,:,1));
+
+gain = -33;
+dyn = 40;
+tissue_image = imagelog(abs(iq2d).^2,gain,dyn);
+
+<span class="comment">% Set the pixels with positive and negative phase-angle to red and blue</span>
+cf_image=tissue_image;
+cf_image(positiveindex)=redindex;
+cf_image(negativeindex)=blueindex;
+<span class="comment">%Show colorflow image using our custom colormap:</span>
+figure(9),image(cf_image);
+colormap(cf_colormap);
+title([<span class="string">'Color Doppler. \alpha='</span>,num2str(alfa,3),<span class="string">' rad'</span>]);
+</pre><img vspace="5" hspace="5" src="Ex10_09.png" alt=""> <h2>Graded color encoding<a name="8"></a></h2><pre class="codeinput"><span class="comment">% Graded red-blue color encoding</span>
+redbluemap=zeros(64,3);
+redbluemap(1:32,1)=[31:-1:0]'/31;<span class="comment">% 1 .. 32: shades of red</span>
+redbluemap(33:64,3)=[0:1:31]'/31;<span class="comment">% 33 .. 64: shades of blue</span>
+redbluemap = fliplr(redbluemap);
+<span class="comment">% Stack the grayscale and red-blue scale on top of each-other =&gt; a scale with 128 colors:</span>
+cf_graded_colormap=zeros(128,3);
+cf_graded_colormap(1:64,:)=gray(64); <span class="comment">%[1..64]: Grayscale</span>
+cf_graded_colormap(65:128,:)=redbluemap;<span class="comment">%[65..128]:Color</span>
+<span class="comment">% Set pixels with low phase shifts to zero,</span>
+phaseangle(find(abs(phaseangle)&lt;alfa))=0;
+<span class="comment">% Find indexes to points where the phase shift is not zero:</span>
+index=find(phaseangle~=0);
+<span class="comment">% Make phase angle in the area [-pi..pi] to indexes [65..128]</span>
+phaseangle=phaseangle/pi*31.5; <span class="comment">% [-pi .. pi] -&gt; [-31.5 .. 31.5]</span>
+phaseangle=round(phaseangle+32.5);<span class="comment">% [-31.5 .. 31.5] -&gt; [1 .. 64]</span>
+phaseangle=phaseangle+64; <span class="comment">% [1 .. 64] -&gt; [65 .. 128]</span>
+<span class="comment">% Combine images</span>
+tissue_image(index)=phaseangle(index);
+<span class="comment">% Show image</span>
+figure(10);
+image(tissue_image); colormap(cf_graded_colormap); colorbar;
+</pre><img vspace="5" hspace="5" src="Ex10_10.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Exercise 10 TTK4165 Medical Signal Processing
+% *Even Florenes Spring 2016*
+
+%% Documentation
+% Ex10.m
+%
+% Purpose: Script answering tasks given in exercise 10 in TTK4165
+%
+% Made by:
+%
+%   Even Florenes NTNU 2016
+%
+%
+% Related files:
+%
+%   imagelog.m: Image a matrix of ultrasound power in log scale
+%
+%   clutterfilterrespons.m
+%
+%   regressionfilter.m: Removes clutter from iq signal
+%
+% Last changes:
+%
+%   2016-04-06 EF: First attempt
+%
+%   2016-04-08 EF: Implemented remaining exercises
+%
+% Status:
+%
+%   Works
+
+%% Exercise 1: Visualization
+
+load carotid.mat
+
+iq2d = squeeze(iq(6,:,:,1));
+
+gain = -33;
+dyn = 40;
+imagelog(abs(iq2d).^2,gain,dyn);
+
+%% Exercise 2: Blood tissue ratio
+
+% Set data-points for vessel wall & artery.
+r_tissue=48; b_tissue=30;
+r_artery=111;b_artery=40;
+% Averaging R samples radially and B samples laterally 
+R=6; B=3;
+% Extract data
+iq_tissue =iq(:,r_tissue+[0:R],b_tissue+[0:B],1);
+iq_artery = iq(:,r_artery+[0:R],b_artery+[0:B],1);
+% Calculate intensity.
+I_tissue = abs(iq_tissue).^2;
+I_artery = abs(iq_artery).^2;
+% Average in all three dimensions.
+I_tissue = mean(I_tissue(:));
+I_artery = mean(I_artery(:));
+
+intensityRatio = 10*log(I_artery/I_tissue);
+
+fprintf('Intensity ratio between artery and tissue: %0.2f dB\n',intensityRatio);
+% How much larger is the intensity in the vessel wall compared to the
+% vessel?
+% 
+% The intensity, power transferred per unit area, is much larger in the 
+% vessel wall.
+%
+%
+
+%% Exercise 3: Regression filter for removing clutter
+
+% Filter data with current order N. 
+%y=regressionfilter(squeeze(iq(:,:,:,frameno),N));
+frameNo=1;
+packetNo=6;
+gain = -20;
+for N=-1:4
+% Create subplot.
+figure(2),subplot(2,3,N+2);
+% Filter data with current order N. 
+y=regressionfilter(iq(:,:,:,frameNo),N);
+% Squeeze to remove all other packet-data. 
+y=squeeze(y(packetNo,:,:));
+% Show image.
+imagelog(abs(y).^2,gain,dyn);
+% Set title.
+title(['N=',num2str(N)]);
+end
+% Comment on the remaining blood and tissue signal for increasing filter
+% order:
+%
+% As we increase N the image becomes darker and darker. For higher N the
+% only remaining part in the image is the fluctuation in the artery and
+% vein. All of the surrounding vessel wall is removed.
+%
+%
+packetSize=13;
+% Set data-points for vessel wall & artery.
+r_tissue=48; b_tissue=30;
+r_artery=111;b_artery=40;
+% Averaging R samples radially and B samples laterally 
+R=6; B=3;
+% Extract data
+N = -1:packetSize-2;
+iq_tissue =iq(:,r_tissue+[0:R],b_tissue+[0:B],1);
+iq_artery = iq(:,r_artery+[0:R],b_artery+[0:B],1);
+I_ratio = zeros(1,length(N));
+I_tissueMean = zeros(1,length(N));
+I_arteryMean = zeros(1,length(N));
+for i = 1:length(N)
+    y_tissue = regressionfilter(iq_tissue,N(i));
+    y_artery = regressionfilter(iq_artery,N(i));
+    I_tissue = abs(y_tissue).^2;
+    I_artery = abs(y_artery).^2;
+    % Average in all three dimensions.
+    I_tissueMean(i) = mean(I_tissue(:));
+    I_arteryMean(i) = mean(I_artery(:));
+    I_ratio(i) = 10*log(I_arteryMean(i)/I_tissueMean(i));
+end
+figure(3),plot(N,10*log(I_tissueMean)),title('Intensity of vessel wall');
+xlabel('N');ylabel('dB');
+intensityClutterComponent = abs(10*log(I_arteryMean(2))-10*log(I_arteryMean(1)));
+fprintf('The intensity of the clutter component compared to the \n')
+fprintf('echo strength from the red blood cells is: %0.2f dB\n',intensityClutterComponent);
+
+figure(4),plot(N,I_ratio),title('Intensity ratio of artery on tissue');
+xlabel('N');ylabel('dB');
+% At what filter order is B/V the largest
+% B/V is largest at highest filter orden,N,11. After N exceeds 2 B/V
+% flattens out, but still increases a little until packSize-2 = 11.
+%
+figure(5);hold on;
+colors = ['mbgry'];
+for N=0:4
+    [y,c,Fm]=regressionfilter(iq(:,:,:,frameNo),N); 
+    [f,H]=clutterfilterrespons(Fm);
+    color = colors(N+1);
+    plot(f,10*log10(H),[color '-']);
+end;
+title('Clutter filter response[N=0,1,2,3,4 color=mbgry]'); xlabel('Normalized Doppler frequency'); ylabel('dB');
+ylim([-20 3]); xlim([-0.5 0.5]);
+hold off
+% Comment.
+% As we increase the filter orden,N, of the regressionfilter, the filtering
+% of the clutter removes more and more of the lower frequencies in the image.
+% Using this high pass filter removes stationary parts (low frequency) of 
+% the image, and leaves moving parts in the image (high frequency). The 
+% moving parts in the image is the blood flow in the artery and vein, 
+% and depending on the filter orden some movement in the vessel wall 
+% is also let trough.
+%
+%% Exercise 4: Complex plots
+frameNo = 1;
+r = 48;
+b = 30;
+iq1 = iq(:,:,:,frameNo);
+% Plot the complex data. Circle the datapoints. 
+figure(6);
+
+subplot(3,2,1);
+plot(squeeze(iq1(:,r,b)),'k-o');
+% Make the axes scale equally in each direction. 
+axis('equal');
+% Label the axes.
+xlabel('Re');ylabel('Im');
+% Save the current axes for later. 
+axlimits=axis;
+% Turn grid on.
+grid on;
+% Use the relation between phase shift and movement 
+% to explain how the signal looks.
+% In the cessel wall there is small low frequent movements around a fixed
+% phase. Subplot (1,1) in figure 6 shows that the phase shift of the area
+% is relatively fixed at real axis, but some movements leads to a small
+% phase shift in the wall
+for N=0:4,
+    subplot(3,2,N+2);
+    % Filter... 
+    [y,c]=regressionfilter(iq1,N); 
+    plot(squeeze(c(:,r,b)),'kx'); % Set axis.
+    axis(axlimits)
+    grid on;
+    % Set title. 
+    title(['N=',num2str(N)]); 
+end;
+%How does the clutter component look?
+% The clutter component looks more and more like the complex plot of the iq
+% data as we increase the filter orden N. This shows that the
+% regressionfilter is able to remove the phase shift due to clutter
+% movements.
+r = 111;
+b= 40;
+figure(7)
+subplot(2,1,1),plot(squeeze(y(:,r,b)),'k-o');
+title('Middle of artery after filtration');
+axis('equal'); % Make the axes scale equally in each direction. 
+xlabel('Re');
+ylabel('Im'); % Label the axes.
+
+%Is the adaption between signal and clutter polynomial as good in blood as in tissue?
+% After filtration the the blood signal complex plot is centered around 0.
+% This shows we have managed to remove most of the clutter component, have
+% a complex plot of the movement due to blood flow.
+%
+subplot(2,1,2),plot(squeeze(c(:,r,b)),'k-o');
+title('Middle of artery residual');
+%What does the residual signal look like?
+% The residual is centered around Im = 28, Re = -45 which shows that there
+% is strong clutter component from the movement of the vessel wall.
+%% Exercise 5: Velocity estimation using the autocorrelation method
+
+frameno = 5; 
+iq1=squeeze(iq(:,:,:,frameno)); 
+N=3; 
+y=regressionfilter(iq1,N);
+% Get packetsize in data. 
+packetsize=size(iq,1);
+
+% Make two matrices with lag ? = 1 of the clutter-filtered data. 
+y1 = y(1:packetsize-1,:,:);
+y2 = y(2:packetsize,:,:);
+
+R1=conj(y1).*y2; 
+R1=squeeze(mean(R1));
+R=10; B=3; 
+b=ones(R,B)/(R*B);
+R1=filter2(b,R1);
+%Find the phase angle.
+phaseangle= angle(R1);
+
+figure(8);colormap('default'); 
+subplot(1,2,1),imagesc(phaseangle);
+% Show colorbar.
+colorbar; title('Phaseangle before filtration');
+
+P=squeeze(mean(abs(y).^2)); 
+% Spatial averaging. 
+P=filter2(b,P);
+% Normalization. 
+P=P/max(P(:));
+dyn = -14;
+beta=10.^(dyn/10);% 16 dB dynamic range 
+index=find(P<beta); % Get indexes. 
+phaseangle(index)=0;
+
+figure(8);colormap('default'); 
+subplot(1,2,2),imagesc(phaseangle);
+% Show colorbar.
+colorbar; title('Phaseangle after filtration');
+
+% What sign does the phase shift in the artery have?
+% The artery have phase shift with positive sign ranging in general between
+% 1.5-3 given by the colorbar.
+
+% What is the relation between sign and flow direction?
+% Red, orange, yellow (warm colors) is used for positive values and show 
+% flow direction towards the ultrasound transducer, and blue (cold colors) 
+% is used for negative sign which indicates flow away from the transducer.
+
+
+% What sign does the phase shift in the vein have? Comment.
+% The vein have phase shift with negative sign, which shown with blue
+% color. The artery transports blood from the heart towards the brain in
+% the imaged area, which is here towards the transducer. 
+% The vein transports the blood back from the brain towards which in the
+% imaged area is away from the transducer.
+
+%% Color encoding
+% Simple code to make a combined color and grayscale tissue image
+% Make a cf_colormap with 66 colors:
+% A cf_colormap has three columns, one for red (R), one for green (G), and one for blue (B) 
+cf_colormap=zeros(66,3);
+% The first 64 colors are for grayscale 
+cf_colormap(1:64,:) = gray(64);
+% The last to colors are red and blue 
+redindex=65;
+blueindex=66;
+cf_colormap(redindex,:)=[1 0 0]; %R=1, G=0, B=0 
+cf_colormap(blueindex,:)=[0 0 1]; %R=0, G=0, B=1
+% Tissueimage: Grayscale with 64 levels, from IMAGELOG
+% Phaseangle: Matrix with estimated phaseangle for all points in the % image.
+alfa = pi/4;
+positiveindex=find(phaseangle>alfa); 
+negativeindex=find(phaseangle<-alfa);
+
+iq2d = squeeze(iq(6,:,:,1));
+
+gain = -33;
+dyn = 40;
+tissue_image = imagelog(abs(iq2d).^2,gain,dyn);
+
+% Set the pixels with positive and negative phase-angle to red and blue 
+cf_image=tissue_image;
+cf_image(positiveindex)=redindex;
+cf_image(negativeindex)=blueindex;
+%Show colorflow image using our custom colormap: 
+figure(9),image(cf_image);
+colormap(cf_colormap);
+title(['Color Doppler. \alpha=',num2str(alfa,3),' rad']);
+
+%% Graded color encoding
+
+% Graded red-blue color encoding
+redbluemap=zeros(64,3);
+redbluemap(1:32,1)=[31:-1:0]'/31;% 1 .. 32: shades of red 
+redbluemap(33:64,3)=[0:1:31]'/31;% 33 .. 64: shades of blue 
+redbluemap = fliplr(redbluemap);
+% Stack the grayscale and red-blue scale on top of each-other => a scale with 128 colors: 
+cf_graded_colormap=zeros(128,3);
+cf_graded_colormap(1:64,:)=gray(64); %[1..64]: Grayscale 
+cf_graded_colormap(65:128,:)=redbluemap;%[65..128]:Color
+% Set pixels with low phase shifts to zero, 
+phaseangle(find(abs(phaseangle)<alfa))=0;
+% Find indexes to points where the phase shift is not zero: 
+index=find(phaseangle~=0);
+% Make phase angle in the area [-pi..pi] to indexes [65..128] 
+phaseangle=phaseangle/pi*31.5; % [-pi .. pi] -> [-31.5 .. 31.5] 
+phaseangle=round(phaseangle+32.5);% [-31.5 .. 31.5] -> [1 .. 64] 
+phaseangle=phaseangle+64; % [1 .. 64] -> [65 .. 128]
+% Combine images 
+tissue_image(index)=phaseangle(index); 
+% Show image
+figure(10);
+image(tissue_image); colormap(cf_graded_colormap); colorbar;
+##### SOURCE END #####
+--></body></html>

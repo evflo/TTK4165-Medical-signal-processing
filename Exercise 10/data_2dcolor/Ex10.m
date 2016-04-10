@@ -7,19 +7,27 @@
 % Purpose: Script answering tasks given in exercise 10 in TTK4165
 %
 % Made by:
+%
 %   Even Florenes NTNU 2016
 %
+%
 % Related files:
+%
 %   imagelog.m: Image a matrix of ultrasound power in log scale
+%
 %   clutterfilterrespons.m
+%
 %   regressionfilter.m: Removes clutter from iq signal
 %
 % Last changes:
+%
 %   2016-04-06 EF: First attempt
+%
 %   2016-04-08 EF: Implemented remaining exercises
 %
 % Status:
-%   In production
+%
+%   Works
 
 %% Exercise 1: Visualization
 
@@ -230,7 +238,7 @@ P=squeeze(mean(abs(y).^2));
 P=filter2(b,P);
 % Normalization. 
 P=P/max(P(:));
-dyn = -13;
+dyn = -14;
 beta=10.^(dyn/10);% 16 dB dynamic range 
 index=find(P<beta); % Get indexes. 
 phaseangle(index)=0;
